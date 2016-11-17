@@ -14,8 +14,6 @@ import os.path
 from django.utils.encoding import smart_str
 from openpyxl.styles import colors
 from openpyxl.styles import Font, Color
-from openpyxl.styles import colors
-from openpyxl import Workbook
 
 def main():
     excelFile = raw_input("Please choose an excel file by name:\n")
@@ -31,7 +29,11 @@ def excel(name):
     for s in sheet_names:
         sheet = wb.get_sheet_by_name(s)
         sheet2 = wb2.get_sheet_by_name(s)
-        traverseSheet(musicSheet(sheet,sheet2),sheet,sheet2)
+        if name != "Seat":
+            traverseSheet(musicSheet(sheet,sheet2),sheet,sheet2)
+        else:
+            tSeatSheet(seatSheet(sheet,sheet2),sheet,sheet2)
+            
     wb2.save(my_file)
     
 #Create result excel file. Copies sheets
@@ -76,17 +78,17 @@ def musicSheet(sheet,sheet2):
         command = 'E'
             
     return command        
+    
 def traverseSheet(command,sheet,sheet2):
     row_num = sheet.max_row
     for x in range(2,row_num + 1):
-        tempStr = smart_str(sheet[command + str(x)].value)
         resp = request(smart_str(sheet[command + str(x)].value))
         print resp['text']
         
         #if len(resp['actions']) == 0:
-        sheet2['A' + str(x)] = smart_str(sheet['A' + str(x)].value)
-        sheet2['B' + str(x)] = smart_str(sheet['B' + str(x)].value)
-        sheet2['C' + str(x)] = smart_str(sheet['C' + str(x)].value)
+        sheet2['A' + str(x)] = smart_str(sheet['A' + str(x)].value) #Song
+        sheet2['B' + str(x)] = smart_str(sheet['B' + str(x)].value) #Intent
+        sheet2['C' + str(x)] = smart_str(sheet['C' + str(x)].value) #Command
         sheet2['D' + str(x)] = smart_str(resp['text'])
         if len(resp['actions']) != 0:
             sheet2['E' + str(x)] = smart_str(resp['actions'][0]['action_type'])
@@ -107,17 +109,92 @@ def traverseSheet(command,sheet,sheet2):
             sheet2['D' + str(x)].font = Font(color=colors.RED)
             sheet2['E' + str(x)] = "Missing Action"
             sheet2['E' + str(x)].font = Font(color=colors.RED)
+            
+def seatSheet(sheet,sheet2):
+    sheet2['A1'] = sheet['A1'].value
+    sheet2['A1'].font = Font(bold=True, size=18)
+    
+    sheet2['B1'] = sheet['B1'].value
+    sheet2['B1'].font = Font(bold=True, size=18)
+    
+    sheet2['C1'] = sheet['C1'].value
+    sheet2['C1'].font = Font(bold=True, size=18)
+    
+    sheet2['D1'] = sheet['D1'].value
+    sheet2['D1'].font = Font(bold=True, size=18)
+    
+    sheet2['E1'] = "Response"
+    sheet2['E1'].font = Font(bold=True, size=18)
+    
+    sheet2['F1'] = "Target"
+    sheet2['F1'].font = Font(bold=True, size=18)
+    
+    sheet2['G1'] = "Action Type"
+    sheet2['G1'].font = Font(bold=True, size=18)
+    
+    sheet2['H1'] = "Raw Action"
+    sheet2['H1'].font = Font(bold=True, size=18)
+    return 'D'        
+    
+def tSeatSheet(command,sheet,sheet2):
+    row_num = sheet.max_row
+    for x in range(2,row_num + 1):
+        resp = request(smart_str(sheet[command + str(x)].value))
+        print resp['text']
+        
+        #if len(resp['actions']) == 0:
+        sheet2['A' + str(x)] = smart_str(sheet['A' + str(x)].value) #Target
+        sheet2['B' + str(x)] = smart_str(sheet['B' + str(x)].value) #Song
+        sheet2['C' + str(x)] = smart_str(sheet['C' + str(x)].value) #Action
+        sheet2['D' + str(x)] = smart_str(sheet['D' + str(x)].value) #Command
+        sheet2['E' + str(x)] = smart_str(resp['text']) #Response
+        if len(resp['actions']) != 0:
+            trigger = False
+            if ('target' in resp['actions'][0].keys()):
+                sheet2['F' + str(x)] = smart_str(resp['actions'][0]['target']) #target
+            else:
+                tempText = "Missing Target"
+                sheet2['F' + str(x)] = tempText
+                
+            sheet2['G' + str(x)] = smart_str(resp['actions'][0]['action_type']) #action
+            sheet2['H' + str(x)] = smart_str(resp['actions']) #raw action
+            if smart_str(resp['actions'][0]['action_type']) != smart_str(sheet['C' + str(x)].value):
+                trigger = True
+                tempText = "Action type mismatch"
+            elif smart_str(sheet2['A' + str(x)].value) != smart_str(sheet2['F' + str(x)].value):
+                trigger = True
+                tempText = "Target mismatch"
+                
+            if trigger:
+                sheet2['A' + str(x)].font = Font(color=colors.RED)
+                sheet2['B' + str(x)].font = Font(color=colors.RED)
+                sheet2['C' + str(x)].font = Font(color=colors.RED)
+                sheet2['D' + str(x)].font = Font(color=colors.RED)
+                sheet2['E' + str(x)].font = Font(color=colors.RED)
+                sheet2['F' + str(x)].font = Font(color=colors.RED)
+                sheet2['G' + str(x)].font = Font(color=colors.RED)
+                sheet2['H' + str(x)].font = Font(color=colors.RED)
+                sheet2['I' + str(x)] = tempText
+                sheet2['I' + str(x)].font = Font(color=colors.RED)
+                
+        else: #If action is empty
+            sheet2['A' + str(x)].font = Font(color=colors.RED)
+            sheet2['B' + str(x)].font = Font(color=colors.RED)
+            sheet2['C' + str(x)].font = Font(color=colors.RED)
+            sheet2['D' + str(x)].font = Font(color=colors.RED)
+            sheet2['E' + str(x)].font = Font(color=colors.RED)
+            sheet2['F' + str(x)] = "Missing Action"
+            sheet2['F' + str(x)].font = Font(color=colors.RED)
         
         
         
-main()
-"""
-def s():
-    a = request("play adele")
-    print a['text']
-    print a['actions']
-    for e in a['actions'][0]:
-        print e
-        print a['actions'][0][e]
+#main()
 
-s()"""
+def s():
+    a = request("cancel")
+    print a['text']
+    print a
+    #print a['actions']
+    #print 'target' in a['actions'][0].keys()
+
+s()
