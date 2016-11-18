@@ -188,13 +188,12 @@ def tSeatSheet(command,sheet,sheet2):
         
         
         
-#main()
+main()
 
-def s():
-    a = request("cancel")
+"""def s():
+    a = request("play Forever Country in front passenger seat")
     print a['text']
-    print a
-    #print a['actions']
-    #print 'target' in a['actions'][0].keys()
+    print a['actions']
+    print 'target' in a['actions'][0].keys()
 
-s()
+s()"""
