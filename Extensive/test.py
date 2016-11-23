@@ -6,6 +6,7 @@ Created on Thu Nov 10 14:59:44 2016
 @author:Beiwen Liu
 """
 
+import time
 import pandas as pd
 import requests
 from openpyxl import Workbook
@@ -16,8 +17,9 @@ from openpyxl.styles import colors
 from openpyxl.styles import Font, Color
 
 def main():
-    excelFile = raw_input("Please choose an excel file by name:\n")
-    excel(excelFile)
+    excelFile = raw_input("Please choose an excel file by name:\n").split(",")
+    for files in excelFile:
+        excel(files)
     
 def excel(name):
     wb = openpyxl.load_workbook('{}.xlsx'.format(name), data_only=True) #Commands
