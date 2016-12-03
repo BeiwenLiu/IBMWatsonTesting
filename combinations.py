@@ -23,35 +23,40 @@ def main():
 
     list3 = [(y,x) for x in list1 for y in list2]
              
-    output = sum([map(list, combinations(list3, i)) for i in range(len(list3) + 1)], [])
-    output = [map(list, comb) for comb in combinations(list3, 5)]
+    #output = sum([map(list, combinations(list3, i)) for i in range(len(list3) + 1)], [])
+    exList = []
+    for x in range(1,5):
+        output = [map(list, comb) for comb in combinations(list3, x)]
+        exList.append(output)
+    
     counter = 1
-    for element in output:
-        print counter
-        duplicates = []
-        flag = True
-        string = "can I have"
-        for tuples in element:
-            if tuples[1] not in duplicates:
-                duplicates.append(tuples[1])
-            else:
-                flag = False
-                break
-            string = string + " " + tuples[0] + " " + tuples[1]
-
-        if flag:
-            sheet['A' + str(counter)] = "none"
-            sheet['C' + str(counter)] = string
-            sheet['B' + str(counter)] = "food order"
-            counter = counter + 1
-            sheet['A' + str(counter)] = "none"
-            sheet['C' + str(counter)] = "confirm"
-            sheet['B' + str(counter)] = "complete food order"
-            counter = counter + 1
-            sheet['A' + str(counter)] = "none"
-            sheet['C' + str(counter)] = "cancel"
-            sheet['B' + str(counter)] = "cancel"
-            counter = counter + 1
+    for output in exList:
+        for element in output:
+            
+            duplicates = []
+            flag = True
+            string = "can I have"
+            for tuples in element:
+                if tuples[1] not in duplicates:
+                    duplicates.append(tuples[1])
+                else:
+                    flag = False
+                    break
+                string = string + " " + tuples[0] + " " + tuples[1]
+    
+            if flag:
+                sheet['A' + str(counter)] = "none"
+                sheet['C' + str(counter)] = string
+                sheet['B' + str(counter)] = "food order"
+                counter = counter + 1
+                sheet['A' + str(counter)] = "none"
+                sheet['C' + str(counter)] = "confirm"
+                sheet['B' + str(counter)] = "complete food order"
+                counter = counter + 1
+                sheet['A' + str(counter)] = "none"
+                sheet['C' + str(counter)] = "cancel"
+                sheet['B' + str(counter)] = "cancel"
+                counter = counter + 1
 
     wb.save('FoodCombinations.xlsx')
         
